@@ -20,6 +20,7 @@ angular.module('docs').controller('SettingsConfig', function($scope, $rootScope,
       $scope.app.guest_login = enabled;
     });
   };
+  
 
   // Enable/disable OCR
   $scope.changeOcrEnabled = function (enabled) {
