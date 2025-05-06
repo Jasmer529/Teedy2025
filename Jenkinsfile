@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         // Jenkins credentials configuration
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub_credentials') // DockerHub 凭证 ID
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials') // DockerHub 凭证 ID
 
         // Docker Hub Repository 的名字
         DOCKER_IMAGE = 'jasmer529/Teedy2025'
