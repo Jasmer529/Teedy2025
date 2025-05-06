@@ -6,6 +6,8 @@ pipeline {
 
         // 使用 Jenkins 的构建号作为 tag
         DOCKER_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_CLI_HINTS = 'false'
+        DOCKER_CONTEXT = 'default' // 显式设定为 default，避免寻找 desktop-linux
     }
 
     stages {
