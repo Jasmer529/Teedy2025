@@ -1,56 +1,36 @@
-pipeline {
+ pipeline {
     agent any
     environment {
-        // Docker Hub Repository 的名字
-        DOCKER_IMAGE = 'jasmer529/teedy2025'
-
-        // 使用 Jenkins 的构建号作为 tag
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
-        DOCKER_CLI_HINTS = 'false'
-        DOCKER_CONTEXT = 'default' // 显式设定为 default，避免寻找 desktop-linux
+        DEPLOYMENT_NAME = "hello-node"
+        CONTAINER_NAME = "docs"
+        IMAGE_NAME = "jasmer529/teedy2025:latest"
     }
-
     stages {
-        stage('Build') {
+        stage('Start Minikube') {
             steps {
-                checkout scmGit(
-                    branches: [[name: '*/master']],
-                    extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/Jasmer529/Teedy2025.git']]
-                )
-                bat 'mvn -B -DskipTests clean package'
+                bat '''
+                    if ! minikube status | grep -q "Running"; then
+                        echo "Starting Minikube..."
+                        minikube start
+                    else
+                        echo "Minikube already running."
+                    fi
+                '''
             }
         }
-
-        stage('Build Image') {
+        stage('Set Image') {
             steps {
-                script {
-                    docker.build("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}")
-                }
+                bat '''
+                    echo "Setting image for deployment..."
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_N
+                '''
             }
         }
-
-        stage('Push Image') {
+        stage('Verify') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
-                        docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
-                    }
-                }
-            }
-        }
-
-        stage('Run Container') {
-            steps {
-                script {
-                    bat 'docker stop teedy-container-8081 || exit 0'
-                    bat 'docker rm teedy-container-8081 || exit 0'
-
-                    docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").run('--name teedy-container-8081 -d -p 8081:8080')
-                    bat 'docker ps --filter "name=teedy-container"'
-                }
+                bat 'kubectl rollout status deployment/${DEPLOYMENT_NAME}'
+                bat 'kubectl get pods'
             }
         }
     }
-}
+ }
