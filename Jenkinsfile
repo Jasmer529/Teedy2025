@@ -4,11 +4,13 @@ pipeline {
         DEPLOYMENT_NAME = "hello-node"
         CONTAINER_NAME = "docs"
         IMAGE_NAME = "jasmer529/teedy2025:latest"
+        // 保持原来的环境变量
     }
     stages {
         stage('Start Minikube') {
             steps {
                 bat '''
+                    SET PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%
                     minikube status | findstr /C:"Running"
                     if %errorlevel% neq 0 (
                         echo Starting Minikube...
