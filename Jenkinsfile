@@ -1,4 +1,4 @@
- pipeline {
+pipeline {
     agent any
     environment {
         DEPLOYMENT_NAME = "hello-node"
@@ -9,28 +9,29 @@
         stage('Start Minikube') {
             steps {
                 bat '''
-                    if ! minikube status | grep -q "Running"; then
-                        echo "Starting Minikube..."
+                    minikube status | findstr /C:"Running"
+                    if %errorlevel% neq 0 (
+                        echo Starting Minikube...
                         minikube start
-                    else
-                        echo "Minikube already running."
-                    fi
+                    ) else (
+                        echo Minikube already running.
+                    )
                 '''
             }
         }
         stage('Set Image') {
             steps {
                 bat '''
-                    echo "Setting image for deployment..."
-                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_N
+                    echo Setting image for deployment...
+                    kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%
                 '''
             }
         }
         stage('Verify') {
             steps {
-                bat 'kubectl rollout status deployment/${DEPLOYMENT_NAME}'
+                bat 'kubectl rollout status deployment/%DEPLOYMENT_NAME%'
                 bat 'kubectl get pods'
             }
         }
     }
- }
+}
