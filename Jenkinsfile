@@ -4,7 +4,6 @@ pipeline {
         DEPLOYMENT_NAME = "hello-node"
         CONTAINER_NAME = "docs"
         IMAGE_NAME = "jasmer529/teedy2025:latest"
-        // 保持原来的环境变量
     }
     stages {
         stage('Start Minikube') {
