@@ -13,6 +13,7 @@ pipeline {
                     SET "PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%"
 
                     echo Setting minikube driver to docker...
+                    minikube delete
                     minikube config set driver docker
 
                     echo Checking minikube status...
