@@ -9,11 +9,17 @@ pipeline {
         stage('Start Minikube') {
             steps {
                 bat '''
-                    SET PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%
+                    echo Setting PATH...
+                    SET "PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%"
+
+                    echo Setting minikube driver to docker...
+                    minikube config set driver docker
+
+                    echo Checking minikube status...
                     minikube status | findstr /C:"Running"
                     if %errorlevel% neq 0 (
-                        echo Starting Minikube...
-                        minikube start
+                        echo Minikube not running, starting with docker driver...
+                        minikube start --driver=docker --force
                     ) else (
                         echo Minikube already running.
                     )
