@@ -11,13 +11,6 @@ pipeline {
                 bat '''
                     echo Setting PATH...
                     SET "PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%"
-
-                    if ! minikube status | grep -q "Running"; then
-                        echo Starting Minikube...
-                        minikube start
-                    else
-                        echo Minikube is already running.
-                    fi
                 '''
             }
         }
