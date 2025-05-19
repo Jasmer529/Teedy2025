@@ -8,24 +8,28 @@ pipeline {
     stages {
         stage('Start Minikube') {
             steps {
-                bat '''
-                    echo Setting PATH...
-                    SET "PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%"
+                sh '''
+                    if ! minikube status | grep -q "Running"; then
+                        echo Starting Minikube...
+                        minikube start
+                    else
+                        echo Minikube is already running.
+                    fi
                 '''
             }
         }
         stage('Set Image') {
             steps {
-                bat '''
+                sh '''
                     echo Setting image for deployment...
-                    minikube kubectl -- set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%
+                    kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%
                 '''
             }
         }
         stage('Verify') {
             steps {
-                bat 'minikube kubectl -- rollout status deployment/%DEPLOYMENT_NAME%'
-                bat 'minikube kubectl -- get pods'
+                sh 'kubectl rollout status deployment/%DEPLOYMENT_NAME%'
+                sh 'kubectl get pods'
             }
         }
     }
