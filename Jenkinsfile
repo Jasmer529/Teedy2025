@@ -12,18 +12,12 @@ pipeline {
                     echo Setting PATH...
                     SET "PATH=C:\\Users\\Administrator\\scoop\\shims;%PATH%"
 
-                    echo Setting minikube driver to docker...
-                    minikube delete
-                    minikube config set driver docker
-
-                    echo Checking minikube status...
-                    minikube status | findstr /C:"Running"
-                    if %errorlevel% neq 0 (
-                        echo Minikube not running, starting with docker driver...
-                        minikube start --driver=docker --force
-                    ) else (
-                        echo Minikube already running.
-                    )
+                    if ! minikube status | grep -q "Running"; then
+                        echo Starting Minikube...
+                        minikube start
+                    else
+                        echo Minikube is already running.
+                    fi
                 '''
             }
         }
