@@ -18,14 +18,14 @@ pipeline {
             steps {
                 bat '''
                     echo Setting image for deployment...
-                    kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%
+                    minikube kubectl -- set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%
                 '''
             }
         }
         stage('Verify') {
             steps {
-                bat 'kubectl rollout status deployment/%DEPLOYMENT_NAME%'
-                bat 'kubectl get pods'
+                bat 'minikube kubectl -- rollout status deployment/%DEPLOYMENT_NAME%'
+                bat 'minikube kubectl -- get pods'
             }
         }
     }
